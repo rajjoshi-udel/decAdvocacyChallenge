@@ -129,7 +129,7 @@ print(display_df.to_string())
 #| fig-cap: "Daily productivity gain when Patrick is present, by shop. Higher bars mean bigger impact."
 #| echo: false
 
-fig, ax = plt.subplots(figsize=(10, 6))
+fig, ax = plt.subplots(figsize=(8, 6))
 bars = ax.bar(impact_summary.index, impact_summary['gain'], 
               color=['#e74c3c', '#f39c12', '#3498db', '#2ecc71', '#9b59b6'],
               alpha=0.8, edgecolor='black', linewidth=1.5)
@@ -203,7 +203,7 @@ for shop in sorted(carsDF['shopID'].unique()):
 
 conf_df = pd.DataFrame(confidence_data).sort_values('mean_gain', ascending=False)
 
-fig, ax = plt.subplots(figsize=(10, 6))
+fig, ax = plt.subplots(figsize=(8, 6))
 x_pos = np.arange(len(conf_df))
 width = 0.6
 
@@ -273,7 +273,7 @@ strategies = ['Current\nPattern', 'Equal Time\nAll Shops', 'Focus on\nShops 4, 2
 gains = [annual_current, annual_strategy_b, annual_strategy_a]
 colors_strat = ['#95a5a6', '#3498db', '#2ecc71']
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 6))
 
 # Bar chart
 bars = ax1.bar(strategies, gains, color=colors_strat, alpha=0.8, 

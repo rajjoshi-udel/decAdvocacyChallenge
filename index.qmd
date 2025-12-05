@@ -60,38 +60,34 @@ After analyzing 250 days of productivity data across your 5 shops, here's the bo
 #| fig-cap: "All 250 days of productivity data. Each point shows cars fixed that day. Blue = boss absent, Orange = boss present. Notice how some shops show bigger jumps when the boss is present."
 #| echo: false
 
-fig, axes = plt.subplots(1, 5, figsize=(16, 4))
+fig, ax = plt.subplots(figsize=(8, 6))
 shops = sorted(carsDF['shopID'].unique())
 colors = {'absent': '#3498db', 'present': '#e67e22'}
 
-for idx, shop in enumerate(shops):
+# Add jitter to prevent overlap on x-axis
+np.random.seed(42)
+
+for shop in shops:
     shop_data = carsDF[carsDF['shopID'] == shop]
     absent = shop_data[shop_data['boss'] == 0]
     present = shop_data[shop_data['boss'] == 1]
     
-    # Add jitter to prevent overlap
-    np.random.seed(42)
-    jitter_absent = np.random.normal(0, 0.15, len(absent))
-    jitter_present = np.random.normal(0, 0.15, len(present))
+    # Add jitter to x-axis (shop ID) to prevent overlap
+    jitter_absent = np.random.normal(0, 0.1, len(absent))
+    jitter_present = np.random.normal(0, 0.1, len(present))
     
-    axes[idx].scatter(absent['observation'] + jitter_absent, absent['carsFixed'], 
-                      alpha=0.6, s=40, color=colors['absent'], label='Boss Absent')
-    axes[idx].scatter(present['observation'] + jitter_present, present['carsFixed'], 
-                      alpha=0.7, s=50, color=colors['present'], label='Boss Present', marker='^')
-    
-    # Add mean lines
-    mean_absent = absent['carsFixed'].mean()
-    mean_present = present['carsFixed'].mean()
-    axes[idx].axhline(mean_absent, color=colors['absent'], linestyle='--', alpha=0.5, linewidth=1.5)
-    axes[idx].axhline(mean_present, color=colors['present'], linestyle='--', alpha=0.5, linewidth=1.5)
-    
-    axes[idx].set_title(f'Shop {shop}', fontsize=13, fontweight='bold')
-    axes[idx].set_xlabel('Day', fontsize=10)
-    axes[idx].set_ylabel('Cars Fixed', fontsize=10)
-    axes[idx].grid(True, alpha=0.3)
-    axes[idx].set_ylim(0, 75)
+    ax.scatter(absent['shopID'] + jitter_absent, absent['carsFixed'], 
+               alpha=0.6, s=40, color=colors['absent'], label='Boss Absent' if shop == shops[0] else '')
+    ax.scatter(present['shopID'] + jitter_present, present['carsFixed'], 
+               alpha=0.7, s=50, color=colors['present'], label='Boss Present' if shop == shops[0] else '', marker='^')
 
-axes[0].legend(loc='upper left', fontsize=9)
+ax.set_xlabel('Shop', fontsize=12, fontweight='bold')
+ax.set_ylabel('Cars Fixed Per Day', fontsize=12, fontweight='bold')
+ax.set_title('Productivity by Shop', fontsize=14, fontweight='bold', pad=20)
+ax.set_xticks(shops)
+ax.set_xticklabels([f'Shop {s}' for s in shops])
+ax.grid(True, alpha=0.3)
+ax.legend(loc='upper right', fontsize=10)
 plt.tight_layout()
 plt.show()
 ```
@@ -203,7 +199,7 @@ for shop in sorted(carsDF['shopID'].unique()):
 
 conf_df = pd.DataFrame(confidence_data).sort_values('mean_gain', ascending=False)
 
-fig, ax = plt.subplots(figsize=(8, 6))
+fig, ax = plt.subplots(figsize=(6, 6))
 x_pos = np.arange(len(conf_df))
 width = 0.6
 
@@ -273,7 +269,7 @@ strategies = ['Current\nPattern', 'Equal Time\nAll Shops', 'Focus on\nShops 4, 2
 gains = [annual_current, annual_strategy_b, annual_strategy_a]
 colors_strat = ['#95a5a6', '#3498db', '#2ecc71']
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 6))
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 6))
 
 # Bar chart
 bars = ax1.bar(strategies, gains, color=colors_strat, alpha=0.8, 
@@ -303,7 +299,7 @@ ax2.grid(True, alpha=0.3, axis='y')
 plt.tight_layout()
 plt.show()
 
-print(f"\n**Key Insight:** By focusing on Shops 4, 2, and 5, you could add approximately {int(annual_strategy_a - annual_current):,} more cars per year compared to your current pattern.")
+print(f"\n**Key Insight:** By focusing on Shops 4, 2, and 5, you could add approximately \n{int(annual_strategy_a - annual_current):,} more cars per year compared to your current pattern.")
 print(f"That's roughly ${int((annual_strategy_a - annual_current) * 30):,} in additional annual revenue.")
 ```
 
